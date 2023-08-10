@@ -1,3 +1,14 @@
 #body{
     margin:0.75em;
 }
+
+#index-body-media img{
+    width:10%;
+}
+
+#nick-body-media img{
+    display:block;
+    width:25%;
+    margin-left:auto;
+    margin-right:auto;
+}
