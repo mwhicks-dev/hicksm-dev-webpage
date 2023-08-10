@@ -1,0 +1,16 @@
+#nav-menu{
+    float:right;
+}
+
+#nav-menu ul{
+    text-align:center;
+    float:right;
+}
+
+#nav-menu li{
+    display:inline-block;
+}
+
+#nav-menu li a{
+    display:inline-block;
+}
