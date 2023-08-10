@@ -1,9 +1,9 @@
-#index-header{
+#header{
     background:#FF9800;
     width:100%;overflow:hidden;
 }
 
-#index-header h1{
+#header h1{
     padding-top:0.25em;padding-bottom:0.25em;
     text-align:center;
 }
