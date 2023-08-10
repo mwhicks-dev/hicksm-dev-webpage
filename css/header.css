@@ -4,21 +4,22 @@
 }
 
 #index-header h1{
+    padding-top:0.25em;padding-bottom:0.25em;
     text-align:center;
 }
 
 #nav-menu{
     float:right;
+    text-align:center;
 }
 
 #nav-menu ul{
-    text-align:center;
     float:right;
 }
 
 #nav-menu li{
     display:inline-block;
-    padding:0em 1.5em;
+    padding:1.5em 1.5em;
     font-weight:600;
     text-transform:uppercase;
 }
