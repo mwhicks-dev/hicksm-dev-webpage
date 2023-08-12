@@ -22,6 +22,110 @@
         </nav>
         <h1>Programming Projects</h1>
     </div>
-    <div id="body"></div>
+    <div id="body">
+        <ul id="projects-list"></ul>
+    </div>
 </body>
+
+<script type="module" type="text/javascript">
+// init octokit
+import { Octokit, App } from "https://esm.sh/octokit";
+const octokit = new Octokit({
+    auth: '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'  // THIS IS JUST A PUBLIC_REPO KEY!
+});
+
+// variables
+const username = "mwhicks-dev";
+const repositories = [ "registrar", "mwhicks-dev.github.io" ];
+
+// functions
+async function accessGitAPI( repository ) {
+    var info = await octokit.request("GET /repos/{owner}/{repo}",{
+        owner: username,
+        repo: repository
+    });
+    var merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
+        owner: username,
+        repo: repository
+    });
+    var languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
+        owner: username,
+        repo: repository
+    });
+
+    return {
+        info, merged_pulls, languages
+    };
+}
+
+async function makeLanguagesPercentage( languages ) {
+    const keys = Object.keys( languages );
+
+    var total = 0;
+    for ( i in keys ) {
+        const key = keys[ i ];
+        total += parseInt( languages[ key ] );
+    }
+    for ( i in keys ) {
+        const key = keys[ i ];
+        languages[ key ] = ( parseInt( 100 * parseInt( languages[ key ] ) / total ) ) + "%";
+    }
+}
+
+async function addListElement( repository ) {
+
+    // get repo using async API function
+    const gitrepo = await accessGitAPI( repository );
+
+    // create HTML for repository name
+    const name = gitrepo.info.data.name;
+    const nameString = "<p>Project Title: " + name + "</p>";
+
+    // create HTML for repository description if it exists
+    const desc = gitrepo.info.data.description;
+    const descString = desc == null ? "" : "<p>Project Description: " + desc + "</p>";
+
+    // create HTML for repository langauges
+    var languages = gitrepo.languages.data
+    await makeLanguagesPercentage( languages );
+    var languagesString = "<p>Languages:<ul>";
+
+    const languages_keys = Object.keys( languages );
+    for ( i in languages_keys ) {
+        const key = languages_keys[ i ];
+        const val = languages[ key ];
+        languagesString += "<li>" + key + ": " + ( val == "0%" ? "<1%" : val ) + "</li>";
+    }
+    languagesString += "</ul>";
+
+    // create HTML for deployed homepage if it exists
+    const website = gitrepo.info.data.homepage;
+    const websiteString = website == "" ? "" : "<p>Deployed Website: <a href=\">" + website + "\">" + website + "</a></p>"
+
+    // create HTML for public githup repository if it exists
+    const githubLink = gitrepo.info.data.html_url;
+    const githubString = "<p>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></p>";
+
+    document.getElementById("projects-list").insertAdjacentHTML( "beforeend",
+        "<li>"
+        + nameString
+        + descString
+        + languagesString
+        + websiteString
+        + githubString
+        + "</li>"
+    );
+}
+
+// run js
+var i;
+for ( i in repositories ) {
+    await addListElement( repositories[ i ] );
+}
+
+
+var repo = await accessGitAPI( repositories[ 0 ] );
+console.log(repo.languages.data)
+</script>
+
 </html>
