@@ -131,11 +131,11 @@ async function addTableElement( repository ) {
 
     // create HTML for deployed homepage if it exists
     const website = gitrepo.info.data.homepage;
-    const websiteString = website == "" ? "" : "<p>Deployed Website: <a href=\">" + website + "\">" + website + "</a></p>"
+    const websiteString = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
 
     // create HTML for public githup repository if it exists
     const githubLink = gitrepo.info.data.html_url;
-    const githubString = "<p>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></p>";
+    const githubString = "<li>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></li>";
 
     document.getElementById(repository).innerHTML = nameString
         + "<ul>"
