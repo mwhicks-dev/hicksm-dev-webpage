@@ -133,6 +133,14 @@ async function addTableElement( repository ) {
     const website = gitrepo.info.data.homepage;
     const websiteString = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
 
+    // create HTML for latest pull
+    const merged_pulls = gitrepo.merged_pulls.data;
+    var pull_string = "";
+    if ( merged_pulls.length > 0 ) {
+        const latest_pull = merged_pulls[ 0 ];
+        pull_string += "<li><p>Latest Pull: " + latest_pull.title + "</p><p>" + latest_pull.body + "</p></li>";
+    }
+
     // create HTML for public githup repository if it exists
     const githubLink = gitrepo.info.data.html_url;
     const githubString = "<li>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></li>";
@@ -142,6 +150,7 @@ async function addTableElement( repository ) {
         + descString
         + languagesString
         + websiteString
+        + pull_string
         + githubString
         + "</ul>";
 }
@@ -155,6 +164,9 @@ for ( var i in active_repositories ) {
 for ( var i in complete_repositories ) {
     await addTableElement( complete_repositories[ i ] );
 }
+
+const repo = accessGitAPI( active_repositories[ 1 ] );
+console.log(repo)
 </script>
 
 </html>
