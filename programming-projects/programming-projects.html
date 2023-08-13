@@ -23,7 +23,12 @@
         <h1>Programming Projects</h1>
     </div>
     <div id="body">
-        <ul id="projects-list"></ul>
+        <table id="projects-table">
+            <tr>
+                <th>Active</th>
+                <th>Complete</th>
+            </tr>
+        </table>
     </div>
 </body>
 
@@ -36,9 +41,35 @@ const octokit = new Octokit({
 
 // variables
 const username = "mwhicks-dev";
-const repositories = [ "registrar", "mwhicks-dev.github.io" ];
+const active_repositories = [ "registrar", "mwhicks-dev.github.io" ];
+const complete_repositories = [];
 
 // functions
+function createTable() {
+    var active_len = parseInt( active_repositories.length );
+    var complete_len = parseInt( complete_repositories.len );
+
+    if ( Number.isNaN( active_len ) )  active_len = 0;
+    if ( Number.isNaN( complete_len ) )  complete_len = 0;
+
+    const table_height = active_len > complete_len ? active_len : complete_len;
+
+    const table = document.getElementById("projects-table")
+    for ( var i = 0; i < table_height; i++ ) {
+        var row = document.createElement("tr");
+        var activeColumn = document.createElement("td");
+        var completeColumn = document.createElement("td");
+
+        if ( i < active_len ) { activeColumn.id = active_repositories[ i ]; }
+        if ( i < complete_len ) { activeColumn.id = complete_repositories[ i ]; }
+
+        row.appendChild( activeColumn );
+        row.appendChild( completeColumn );
+
+        table.appendChild( row );
+    }
+}
+
 async function accessGitAPI( repository ) {
     var info = await octokit.request("GET /repos/{owner}/{repo}",{
         owner: username,
@@ -72,7 +103,7 @@ async function makeLanguagesPercentage( languages ) {
     }
 }
 
-async function addListElement( repository ) {
+async function addTableElement( repository ) {
 
     // get repo using async API function
     const gitrepo = await accessGitAPI( repository );
@@ -83,12 +114,12 @@ async function addListElement( repository ) {
 
     // create HTML for repository description if it exists
     const desc = gitrepo.info.data.description;
-    const descString = desc == null ? "" : "<p>Project Description: " + desc + "</p>";
+    const descString = desc == null ? "" : "<li>Project Description: " + desc + "</li>";
 
     // create HTML for repository langauges
     var languages = gitrepo.languages.data
     await makeLanguagesPercentage( languages );
-    var languagesString = "<p>Languages:<ul>";
+    var languagesString = "<li>Languages:<ul>";
 
     const languages_keys = Object.keys( languages );
     for ( i in languages_keys ) {
@@ -96,7 +127,7 @@ async function addListElement( repository ) {
         const val = languages[ key ];
         languagesString += "<li>" + key + ": " + ( val == "0%" ? "<1%" : val ) + "</li>";
     }
-    languagesString += "</ul>";
+    languagesString += "</ul></li>";
 
     // create HTML for deployed homepage if it exists
     const website = gitrepo.info.data.homepage;
@@ -106,26 +137,24 @@ async function addListElement( repository ) {
     const githubLink = gitrepo.info.data.html_url;
     const githubString = "<p>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></p>";
 
-    document.getElementById("projects-list").insertAdjacentHTML( "beforeend",
-        "<li>"
-        + nameString
+    document.getElementById(repository).innerHTML = nameString
+        + "<ul>"
         + descString
         + languagesString
         + websiteString
         + githubString
-        + "</li>"
-    );
+        + "</ul>";
 }
 
 // run js
-var i;
-for ( i in repositories ) {
-    await addListElement( repositories[ i ] );
+createTable();
+
+for ( var i in active_repositories ) {
+    await addTableElement( active_repositories[ i ] );
 }
-
-
-var repo = await accessGitAPI( repositories[ 0 ] );
-console.log(repo.languages.data)
+for ( var i in complete_repositories ) {
+    await addTableElement( complete_repositories[ i ] );
+}
 </script>
 
 </html>
