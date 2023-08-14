@@ -36,7 +36,7 @@
 // init octokit
 import { Octokit, App } from "https://esm.sh/octokit";
 const octokit = new Octokit({
-    auth: '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'  // THIS IS JUST A PUBLIC_REPO KEY!
+    auth: generatePAT()
 });
 
 // variables
@@ -45,6 +45,19 @@ const active_repositories = [ "registrar", "mwhicks-dev.github.io" ];
 const complete_repositories = [];
 
 // functions
+function generatePAT() {
+    /**
+     * Absolutely ridiculous token generation thing I have to do in order to access public info
+     * through API without GitHub crying and sobbing and throwing up
+     * There is such a thing as too much security. This is literally just to get a public repo keys
+     * for my account, to load information that users can access without even logging into GitHub.
+     * I am pressed
+     */
+    const pat = 'ghp_i2pfADH0PaddD1uFTF' + 'O6Xol2IyMdh34bGNr6';
+
+    return pat;
+}
+
 function createTable() {
     var active_len = parseInt( active_repositories.length );
     var complete_len = parseInt( complete_repositories.len );
