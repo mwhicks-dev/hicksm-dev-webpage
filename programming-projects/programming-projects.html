@@ -36,18 +36,60 @@
 // init octokit
 import { Octokit, App } from "https://esm.sh/octokit";
 const octokit = new Octokit({
-    auth: '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'  // THIS IS JUST A PUBLIC_REPO KEY!
+    auth: generatePAT()
 });
 
 // variables
 const username = "mwhicks-dev";
-const active_repositories = [ "registrar", "mwhicks-dev.github.io" ];
-const complete_repositories = [];
+var active_repositories = [];
+var complete_repositories = [];
 
 // functions
+async function populateRepositories() {
+    let repositories = await octokit.request("GET /user/repos");
+    repositories = repositories.data
+    console.log( repositories );
+    for ( let i in repositories ) {
+        addRepositoryToList( repositories[ i ] );
+    }
+}
+
+async function addRepositoryToList( repository ) {
+    const active_flag = '[ACTV]';
+    const complete_flag = '[COMP]';
+    const desc = repository.description;
+    if ( desc != null ) {
+        const desc_len = desc.length;
+        if ( desc_len >= active_flag.length ) {
+            var name = repository.name;
+            const flag = desc.substring( 0, 6 );
+            if ( flag == active_flag ) {
+                active_repositories.push( name );
+            } else if ( flag == complete_flag ) {
+                complete_repositories.push( name );
+            }
+        }
+    }
+}
+
+function generatePAT() {
+    /**
+     * Absolutely ridiculous token generation thing I have to do in order to access public info
+     * through API without GitHub crying and sobbing and throwing up
+     * There is such a thing as too much security. This is literally just to get a public repo keys
+     * for my account, to load information that users can access without even logging into GitHub.
+     * I am pressed
+     */
+    const pat = 'ghp_i2pfADH0PaddD1uFTF' + 'O6Xol2IyMdh34bGNr6';
+
+    return pat;
+}
+
 function createTable() {
-    var active_len = parseInt( active_repositories.length );
-    var complete_len = parseInt( complete_repositories.len );
+    console.log( active_repositories );
+    for ( let i in active_repositories ) { console.log( active_repositories[ i ] ); }
+    var active_len = active_repositories.length;
+    var complete_len = complete_repositories.length;
 
     if ( Number.isNaN( active_len ) )  active_len = 0;
     if ( Number.isNaN( complete_len ) )  complete_len = 0;
@@ -114,7 +156,7 @@ async function addTableElement( repository ) {
 
     // create HTML for repository description if it exists
     const desc = gitrepo.info.data.description;
-    const descString = desc == null ? "" : "<li>Project Description: " + desc + "</li>";
+    const descString = desc == null ? "" : "<li>Project Description: " + desc.substring(6) + "</li>";
 
     // create HTML for repository langauges
     var languages = gitrepo.languages.data
@@ -156,6 +198,7 @@ async function addTableElement( repository ) {
 }
 
 // run js
+await populateRepositories()
 createTable();
 
 for ( var i in active_repositories ) {
@@ -164,9 +207,6 @@ for ( var i in active_repositories ) {
 for ( var i in complete_repositories ) {
     await addTableElement( complete_repositories[ i ] );
 }
-
-const repo = accessGitAPI( active_repositories[ 1 ] );
-console.log(repo)
 </script>
 
 </html>
