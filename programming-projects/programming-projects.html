@@ -41,8 +41,12 @@ const octokit = new Octokit({
 
 // variables
 const username = "mwhicks-dev";
-var active_repositories = [];
-var complete_repositories = [];
+const active_flag = "[ACTV]";
+const complete_flag = "[COMP]";
+const flag_length = active_flag.length == complete_flag.length ? active_flag.length : -1;
+
+let activeRepositories = [];
+let completeRepositories = [];
 
 // functions
 async function populateRepositories() {
@@ -54,18 +58,16 @@ async function populateRepositories() {
 }
 
 async function addRepositoryToList( repository ) {
-    const active_flag = '[ACTV]';
-    const complete_flag = '[COMP]';
     const desc = repository.description;
     if ( desc != null ) {
         const desc_len = desc.length;
         if ( desc_len >= active_flag.length ) {
-            var name = repository.name;
-            const flag = desc.substring( 0, 6 );
+            const name = repository.name;
+            const flag = desc.substring( 0, flag_length );
             if ( flag == active_flag ) {
-                active_repositories.push( name );
+                activeRepositories.push( name );
             } else if ( flag == complete_flag ) {
-                complete_repositories.push( name );
+                completeRepositories.push( name );
             }
         }
     }
@@ -85,8 +87,8 @@ function generatePAT() {
 }
 
 function createTable() {
-    var active_len = active_repositories.length;
-    var complete_len = complete_repositories.length;
+    const active_len = activeRepositories.length;
+    const complete_len = completeRepositories.length;
 
     if ( Number.isNaN( active_len ) )  active_len = 0;
     if ( Number.isNaN( complete_len ) )  complete_len = 0;
@@ -94,13 +96,13 @@ function createTable() {
     const table_height = active_len > complete_len ? active_len : complete_len;
 
     const table = document.getElementById("projects-table")
-    for ( var i = 0; i < table_height; i++ ) {
-        var row = document.createElement("tr");
-        var activeColumn = document.createElement("td");
-        var completeColumn = document.createElement("td");
+    for ( let i = 0; i < table_height; i++ ) {
+        let row = document.createElement("tr");
+        let activeColumn = document.createElement("td");
+        let completeColumn = document.createElement("td");
 
-        if ( i < active_len ) { activeColumn.id = active_repositories[ i ]; }
-        if ( i < complete_len ) { activeColumn.id = complete_repositories[ i ]; }
+        if ( i < active_len ) { activeColumn.id = activeRepositories[ i ]; }
+        if ( i < complete_len ) { activeColumn.id = completeRepositories[ i ]; }
 
         row.appendChild( activeColumn );
         row.appendChild( completeColumn );
@@ -110,15 +112,15 @@ function createTable() {
 }
 
 async function accessGitAPI( repository ) {
-    var info = await octokit.request("GET /repos/{owner}/{repo}",{
+    const info = await octokit.request("GET /repos/{owner}/{repo}",{
         owner: username,
         repo: repository
     });
-    var merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
+    const merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
         owner: username,
         repo: repository
     });
-    var languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
+    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
         owner: username,
         repo: repository
     });
@@ -131,12 +133,12 @@ async function accessGitAPI( repository ) {
 async function makeLanguagesPercentage( languages ) {
     const keys = Object.keys( languages );
 
-    var total = 0;
-    for ( i in keys ) {
+    let total = 0;
+    for ( let i in keys ) {
         const key = keys[ i ];
         total += parseInt( languages[ key ] );
     }
-    for ( i in keys ) {
+    for ( let i in keys ) {
         const key = keys[ i ];
         languages[ key ] = ( parseInt( 100 * parseInt( languages[ key ] ) / total ) ) + "%";
     }
@@ -153,15 +155,15 @@ async function addTableElement( repository ) {
 
     // create HTML for repository description if it exists
     const desc = gitrepo.info.data.description;
-    const descString = desc == null ? "" : "<li>Project Description: " + desc.substring(6) + "</li>";
+    const descString = desc == null ? "" : "<li>Project Description: " + desc.substring( flag_length ) + "</li>";
 
     // create HTML for repository langauges
-    var languages = gitrepo.languages.data
+    let languages = gitrepo.languages.data
     await makeLanguagesPercentage( languages );
-    var languagesString = "<li>Languages:<ul>";
+    let languagesString = "<li>Languages:<ul>";
 
     const languages_keys = Object.keys( languages );
-    for ( i in languages_keys ) {
+    for ( let i in languages_keys ) {
         const key = languages_keys[ i ];
         const val = languages[ key ];
         languagesString += "<li>" + key + ": " + ( val == "0%" ? "<1%" : val ) + "</li>";
@@ -174,7 +176,7 @@ async function addTableElement( repository ) {
 
     // create HTML for latest pull
     const merged_pulls = gitrepo.merged_pulls.data;
-    var pull_string = "";
+    let pull_string = "";
     if ( merged_pulls.length > 0 ) {
         const latest_pull = merged_pulls[ 0 ];
         pull_string += "<li><p>Latest Pull: " + latest_pull.title + "</p><p>" + latest_pull.body + "</p></li>";
@@ -198,11 +200,11 @@ async function addTableElement( repository ) {
 await populateRepositories()
 createTable();
 
-for ( var i in active_repositories ) {
-    await addTableElement( active_repositories[ i ] );
+for ( let i in activeRepositories ) {
+    await addTableElement( activeRepositories[ i ] );
 }
-for ( var i in complete_repositories ) {
-    await addTableElement( complete_repositories[ i ] );
+for ( let i in completeRepositories ) {
+    await addTableElement( completeRepositories[ i ] );
 }
 </script>
 
