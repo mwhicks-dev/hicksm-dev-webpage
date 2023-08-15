@@ -53,7 +53,7 @@ async function populateRepositories() {
     let repositories = await octokit.request("GET /user/repos");
     repositories = repositories.data
     for ( let i in repositories ) {
-        addRepositoryToList( repositories[ i ] );
+        await addRepositoryToList( repositories[ i ] );
     }
 }
 
@@ -65,12 +65,24 @@ async function addRepositoryToList( repository ) {
             const name = repository.name;
             const flag = desc.substring( 0, flag_length );
             if ( flag == active_flag ) {
-                activeRepositories.push( name );
+                await build( repository, activeRepositories );
             } else if ( flag == complete_flag ) {
-                completeRepositories.push( name );
+                await build( repository, completeRepositories );
             }
         }
     }
+}
+
+async function build( info, arr ) {
+    const merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
+        owner: username,
+        repo: info.name
+    });
+    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
+        owner: username,
+        repo: info.name
+    });
+    arr.push( { info, merged_pulls, languages } );
 }
 
 function generatePAT() {
@@ -86,7 +98,7 @@ function generatePAT() {
     return pat;
 }
 
-function createTable() {
+async function createTable() {
     const active_len = activeRepositories.length;
     const complete_len = completeRepositories.length;
 
@@ -101,33 +113,21 @@ function createTable() {
         let activeColumn = document.createElement("td");
         let completeColumn = document.createElement("td");
 
-        if ( i < active_len ) { activeColumn.id = activeRepositories[ i ]; }
-        if ( i < complete_len ) { activeColumn.id = completeRepositories[ i ]; }
+        if ( i < active_len ) { activeColumn.id = activeRepositories[ i ].info.name; }
+        if ( i < complete_len ) { activeColumn.id = completeRepositories[ i ].info.name; }
 
         row.appendChild( activeColumn );
         row.appendChild( completeColumn );
 
         table.appendChild( row );
     }
-}
 
-async function accessGitAPI( repository ) {
-    const info = await octokit.request("GET /repos/{owner}/{repo}",{
-        owner: username,
-        repo: repository
-    });
-    const merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
-        owner: username,
-        repo: repository
-    });
-    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
-        owner: username,
-        repo: repository
-    });
-
-    return {
-        info, merged_pulls, languages
-    };
+    for ( let i in activeRepositories ) {
+        await addTableElement( activeRepositories[ i ] );
+    }
+    for ( let i in completeRepositories ) {
+        await addTableElement( completeRepositories[ i ] );
+    }
 }
 
 async function makeLanguagesPercentage( languages ) {
@@ -144,17 +144,14 @@ async function makeLanguagesPercentage( languages ) {
     }
 }
 
-async function addTableElement( repository_name ) {
-
-    // get repo using async API function
-    const repository = await accessGitAPI( repository_name );
+async function addTableElement( repository ) {
 
     // create HTML for repository name
-    const name = repository.info.data.name;
+    const name = repository.info.name;
     const name_string = "<p>Project Title: " + name + "</p>";
 
     // create HTML for repository description if it exists
-    const desc = repository.info.data.description;
+    const desc = repository.info.description;
     const desc_string = desc == null ? "" : "<li>Project Description: " + desc.substring( flag_length ) + "</li>";
 
     // create HTML for repository langauges
@@ -171,7 +168,7 @@ async function addTableElement( repository_name ) {
     languagesString += "</ul></li>";
 
     // create HTML for deployed homepage if it exists
-    const website = repository.info.data.homepage;
+    const website = repository.info.homepage;
     const website_string = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
 
     // create HTML for latest pull
@@ -183,10 +180,10 @@ async function addTableElement( repository_name ) {
     }
 
     // create HTML for public githup repository if it exists
-    const html_url = repository.info.data.html_url;
+    const html_url = repository.info.html_url;
     const html_string = "<li>GitHub Link: <a href=\"" + html_url + "\">" + html_url + "</a></li>";
 
-    document.getElementById( repository_name ).innerHTML = name_string
+    document.getElementById( name ).innerHTML = name_string
         + "<ul>"
         + desc_string
         + languagesString
@@ -198,14 +195,7 @@ async function addTableElement( repository_name ) {
 
 // run js
 await populateRepositories()
-createTable();
-
-for ( let i in activeRepositories ) {
-    await addTableElement( activeRepositories[ i ] );
-}
-for ( let i in completeRepositories ) {
-    await addTableElement( completeRepositories[ i ] );
-}
+await createTable();
 </script>
 
 </html>
