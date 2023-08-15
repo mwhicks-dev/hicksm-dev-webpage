@@ -41,26 +41,96 @@ const octokit = new Octokit({
 
 // variables
 const username = "mwhicks-dev";
-const active_repositories = [ "registrar", "mwhicks-dev.github.io" ];
-const complete_repositories = [];
+const active_flag = "[ACTV]";
+const complete_flag = "[COMP]";
+const flag_length = active_flag.length == complete_flag.length ? active_flag.length : -1;
+
+let activeRepositories = [];
+let completeRepositories = [];
 
 // functions
 function generatePAT() {
-    /**
-     * Absolutely ridiculous token generation thing I have to do in order to access public info
-     * through API without GitHub crying and sobbing and throwing up
-     * There is such a thing as too much security. This is literally just to get a public repo keys
-     * for my account, to load information that users can access without even logging into GitHub.
-     * I am pressed
+     * Absolutely ridiculous token generation thing I have to do in order to access public info through API without GitHub crying and sobbing and throwing up.
+     *
+     * @return string Weakest personal access token of all time
      */
     const pat = 'ghp_i2pfADH0PaddD1uFTF' + 'O6Xol2IyMdh34bGNr6';
 
     return pat;
 }
 
-function createTable() {
-    var active_len = parseInt( active_repositories.length );
-    var complete_len = parseInt( complete_repositories.len );
+async function processRepositories() {
+    /**
+     * Obtains all of my public repositories and then calls different function to assign them to their appropriate place.
+     *
+     * Uses the GitHub API /user/repos path to get all public repositories (which is all the personal access token being used has accessed to), and then sends each individual repository to validateRepository to be processed.
+     *
+     * @yield Array Constructs the activeRepositories and completeRepositories global arrays which are used in later functions.
+     */
+    let repositories = await octokit.request("GET /user/repos");
+    repositories = repositories.data
+    for ( let i in repositories ) {
+        await validateRepository( repositories[ i ] );
+    }
+}
+
+async function validateRepository( repository ) {
+    /**
+     * If the repository parameter is to be used on my site, adds its data, merged pulls, and programming language information to the appropriate global array.
+     *
+     * Checks for pre-defined flags active_flag and complete_flag at the beginning of the repository description (if it has one). If the repository has one of the flags, then constructRepositoryObject is called to populate the repsective list with the aforementioned repository data.
+     *
+     * @param repository Broad-level repository information (/repos/{owner}/{repo}).
+     *
+     * @yield Array Adds an unnamed Object as an entry to activeRepositories or completeRepositories depending on the repository parameter's flag.
+     */
+    const desc = repository.description;
+    if ( desc != null ) {
+        const desc_len = desc.length;
+        if ( desc_len >= active_flag.length ) {
+            const name = repository.name;
+            const flag = desc.substring( 0, flag_length );
+            if ( flag == active_flag ) {
+                await constructRepositoryObject( repository, activeRepositories );
+            } else if ( flag == complete_flag ) {
+                await constructRepositoryObject( repository, completeRepositories );
+            }
+        }
+    }
+}
+
+async function constructRepositoryObject( repository, repositoryList ) {
+    /**
+     * Adds some repository information to an array.
+     *
+     * The passed repository has already been validated by validateRepository, so no checks are required. We may simply get the merged pulls and the languages data from GitHub and add all this information to the passed array.
+     *
+     * @param repository Broad-level repository information (/repos/{owner}/{repo}).
+     * @param repositoryList The array to which we will add the extended repository information.
+     *
+     * @yield Array Adds an unnamed Object as an entry to repositoryList.
+     */
+    const merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
+        owner: username,
+        repo: repository.name
+    });
+    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
+        owner: username,
+        repo: repository.name
+    });
+    repositoryList.push( { repository, merged_pulls, languages } );
+}
+
+async function generateTableData() {
+    /**
+     * Creates and populates the projects table on this page.
+     *
+     * This creates a table that is as long as activeRepositories and completeRepositories are long, IDing table datums with the name of the repository whose information they will contain. Afterwards, addTableElemment is called on each repository to fill in the datums.
+     *
+     * @yield HTMLElement Creates the HTML table for this page.
+     */
+    const active_len = activeRepositories.length;
+    const complete_len = completeRepositories.length;
 
     if ( Number.isNaN( active_len ) )  active_len = 0;
     if ( Number.isNaN( complete_len ) )  complete_len = 0;
@@ -68,74 +138,53 @@ function createTable() {
     const table_height = active_len > complete_len ? active_len : complete_len;
 
     const table = document.getElementById("projects-table")
-    for ( var i = 0; i < table_height; i++ ) {
-        var row = document.createElement("tr");
-        var activeColumn = document.createElement("td");
-        var completeColumn = document.createElement("td");
+    for ( let i = 0; i < table_height; i++ ) {
+        let row = document.createElement("tr");
+        let activeColumn = document.createElement("td");
+        let completeColumn = document.createElement("td");
 
-        if ( i < active_len ) { activeColumn.id = active_repositories[ i ]; }
-        if ( i < complete_len ) { activeColumn.id = complete_repositories[ i ]; }
+        if ( i < active_len ) { activeColumn.id = activeRepositories[ i ].repository.name; }
+        if ( i < complete_len ) { activeColumn.id = completeRepositories[ i ].repository.name; }
 
         row.appendChild( activeColumn );
         row.appendChild( completeColumn );
 
         table.appendChild( row );
     }
-}
 
-async function accessGitAPI( repository ) {
-    var info = await octokit.request("GET /repos/{owner}/{repo}",{
-        owner: username,
-        repo: repository
-    });
-    var merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
-        owner: username,
-        repo: repository
-    });
-    var languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
-        owner: username,
-        repo: repository
-    });
-
-    return {
-        info, merged_pulls, languages
-    };
-}
-
-async function makeLanguagesPercentage( languages ) {
-    const keys = Object.keys( languages );
-
-    var total = 0;
-    for ( i in keys ) {
-        const key = keys[ i ];
-        total += parseInt( languages[ key ] );
+    for ( let i in activeRepositories ) {
+        await populateTableDatum( activeRepositories[ i ] );
     }
-    for ( i in keys ) {
-        const key = keys[ i ];
-        languages[ key ] = ( parseInt( 100 * parseInt( languages[ key ] ) / total ) ) + "%";
+    for ( let i in completeRepositories ) {
+        await populateTableDatum( completeRepositories[ i ] );
     }
 }
 
-async function addTableElement( repository ) {
-
-    // get repo using async API function
-    const gitrepo = await accessGitAPI( repository );
-
+async function populateTableDatum( data ) {
+    /**
+     * Creates an HTML string to be added to the table datum for the passed repository.
+     *
+     * Generate a series of HTML elements as strings and then passes them to the td created in the caller, generateTableData. This is done functionally so that I have a consistent, well-formatted page that looks nice and is readable.
+     *
+     * @param data Repository, language, and closed pull request information for a validated repository.
+     *
+     * @yield HTMLElement Populates an HTML element created by the caller, generateTableData.
+     */
     // create HTML for repository name
-    const name = gitrepo.info.data.name;
-    const nameString = "<p>Project Title: " + name + "</p>";
+    const name = data.repository.name;
+    const name_string = "<p>Project Title: " + name + "</p>";
 
     // create HTML for repository description if it exists
-    const desc = gitrepo.info.data.description;
-    const descString = desc == null ? "" : "<li>Project Description: " + desc + "</li>";
+    const desc = data.repository.description;
+    const desc_string = desc == null ? "" : "<li>Project Description: " + desc.substring( flag_length ) + "</li>";
 
     // create HTML for repository langauges
-    var languages = gitrepo.languages.data
-    await makeLanguagesPercentage( languages );
-    var languagesString = "<li>Languages:<ul>";
+    let languages = data.languages.data
+    await interpretLanguageData( languages );
+    let languagesString = "<li>Languages:<ul>";
 
     const languages_keys = Object.keys( languages );
-    for ( i in languages_keys ) {
+    for ( let i in languages_keys ) {
         const key = languages_keys[ i ];
         const val = languages[ key ];
         languagesString += "<li>" + key + ": " + ( val == "0%" ? "<1%" : val ) + "</li>";
@@ -143,40 +192,53 @@ async function addTableElement( repository ) {
     languagesString += "</ul></li>";
 
     // create HTML for deployed homepage if it exists
-    const website = gitrepo.info.data.homepage;
-    const websiteString = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
+    const website = data.repository.homepage;
+    const website_string = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
 
     // create HTML for latest pull
-    const merged_pulls = gitrepo.merged_pulls.data;
-    var pull_string = "";
+    const merged_pulls = data.merged_pulls.data;
+    let pull_string = "";
     if ( merged_pulls.length > 0 ) {
         const latest_pull = merged_pulls[ 0 ];
         pull_string += "<li><p>Latest Pull: " + latest_pull.title + "</p><p>" + latest_pull.body + "</p></li>";
     }
 
     // create HTML for public githup repository if it exists
-    const githubLink = gitrepo.info.data.html_url;
-    const githubString = "<li>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></li>";
+    const html_url = data.repository.html_url;
+    const html_string = "<li>GitHub Link: <a href=\"" + html_url + "\">" + html_url + "</a></li>";
 
-    document.getElementById(repository).innerHTML = nameString
+    document.getElementById( name ).innerHTML = name_string
         + "<ul>"
-        + descString
+        + desc_string
         + languagesString
-        + websiteString
+        + website_string
         + pull_string
-        + githubString
+        + html_string
         + "</ul>";
 }
 
-// run js
-createTable();
+async function interpretLanguageData( data ) {
+    /**
+     * Rewrites each array index in data so that it may be more useful for the caller, populateTableDatum.
+     *
+     * @param data Map Maps language name string to lines of code
+     */
+    const keys = Object.keys( data );
 
-for ( var i in active_repositories ) {
-    await addTableElement( active_repositories[ i ] );
+    let total = 0;
+    for ( let i in keys ) {
+        const key = keys[ i ];
+        total += parseInt( data[ key ] );
+    }
+    for ( let i in keys ) {
+        const key = keys[ i ];
+        data[ key ] = ( parseInt( 100 * parseInt( data[ key ] ) / total ) ) + "%";
+    }
 }
-for ( var i in complete_repositories ) {
-    await addTableElement( complete_repositories[ i ] );
-}
+
+// run functions
+await processRepositories()
+await generateTableData();
 </script>
 
 </html>
