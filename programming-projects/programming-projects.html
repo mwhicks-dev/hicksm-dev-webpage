@@ -48,7 +48,6 @@ var complete_repositories = [];
 async function populateRepositories() {
     let repositories = await octokit.request("GET /user/repos");
     repositories = repositories.data
-    console.log( repositories );
     for ( let i in repositories ) {
         addRepositoryToList( repositories[ i ] );
     }
@@ -86,8 +85,6 @@ function generatePAT() {
 }
 
 function createTable() {
-    console.log( active_repositories );
-    for ( let i in active_repositories ) { console.log( active_repositories[ i ] ); }
     var active_len = active_repositories.length;
     var complete_len = complete_repositories.length;
 
