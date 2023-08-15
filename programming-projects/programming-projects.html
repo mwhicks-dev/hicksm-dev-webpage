@@ -194,7 +194,7 @@ async function populateTableDatum( data ) {
 
     // create HTML for deployed homepage if it exists
     const website = data.repository.homepage;
-    const website_string = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
+    const website_string = website == "" || website == null ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
 
     // create HTML for latest pull
     const merged_pulls = data.merged_pulls.data;
