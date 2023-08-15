@@ -144,21 +144,21 @@ async function makeLanguagesPercentage( languages ) {
     }
 }
 
-async function addTableElement( repository ) {
+async function addTableElement( repository_name ) {
 
     // get repo using async API function
-    const gitrepo = await accessGitAPI( repository );
+    const repository = await accessGitAPI( repository_name );
 
     // create HTML for repository name
-    const name = gitrepo.info.data.name;
-    const nameString = "<p>Project Title: " + name + "</p>";
+    const name = repository.info.data.name;
+    const name_string = "<p>Project Title: " + name + "</p>";
 
     // create HTML for repository description if it exists
-    const desc = gitrepo.info.data.description;
-    const descString = desc == null ? "" : "<li>Project Description: " + desc.substring( flag_length ) + "</li>";
+    const desc = repository.info.data.description;
+    const desc_string = desc == null ? "" : "<li>Project Description: " + desc.substring( flag_length ) + "</li>";
 
     // create HTML for repository langauges
-    let languages = gitrepo.languages.data
+    let languages = repository.languages.data
     await makeLanguagesPercentage( languages );
     let languagesString = "<li>Languages:<ul>";
 
@@ -171,11 +171,11 @@ async function addTableElement( repository ) {
     languagesString += "</ul></li>";
 
     // create HTML for deployed homepage if it exists
-    const website = gitrepo.info.data.homepage;
-    const websiteString = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
+    const website = repository.info.data.homepage;
+    const website_string = website == "" ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
 
     // create HTML for latest pull
-    const merged_pulls = gitrepo.merged_pulls.data;
+    const merged_pulls = repository.merged_pulls.data;
     let pull_string = "";
     if ( merged_pulls.length > 0 ) {
         const latest_pull = merged_pulls[ 0 ];
@@ -183,16 +183,16 @@ async function addTableElement( repository ) {
     }
 
     // create HTML for public githup repository if it exists
-    const githubLink = gitrepo.info.data.html_url;
-    const githubString = "<li>GitHub Link: <a href=\"" + githubLink + "\">" + githubLink + "</a></li>";
+    const html_url = repository.info.data.html_url;
+    const html_string = "<li>GitHub Link: <a href=\"" + html_url + "\">" + html_url + "</a></li>";
 
-    document.getElementById(repository).innerHTML = nameString
+    document.getElementById( repository_name ).innerHTML = name_string
         + "<ul>"
-        + descString
+        + desc_string
         + languagesString
-        + websiteString
+        + website_string
         + pull_string
-        + githubString
+        + html_string
         + "</ul>";
 }
 
