@@ -145,7 +145,7 @@ async function generateTableData() {
         let completeColumn = document.createElement("td");
 
         if ( i < active_len ) { activeColumn.id = activeRepositories[ i ].repository.name; }
-        if ( i < complete_len ) { activeColumn.id = completeRepositories[ i ].repository.name; }
+        if ( i < complete_len ) { completeColumn.id = completeRepositories[ i ].repository.name; }
 
         row.appendChild( activeColumn );
         row.appendChild( completeColumn );
