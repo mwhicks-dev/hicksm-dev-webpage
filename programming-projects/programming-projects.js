@@ -19,7 +19,7 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
     $scope.profiles = [
         { 'root' : 'https://api.github.com', 'username' : 'mwhicks-dev', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
         { 'root' : 'https://api.github.ncsu.edu', 'username' : 'mwhicks2', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
-    ]; $scope.ctr = 0;
+    ]; /* EXPIRES: MM/DD/YYYY */
     $scope.active_projects = [];
     $scope.inactive_projects = [];
 
