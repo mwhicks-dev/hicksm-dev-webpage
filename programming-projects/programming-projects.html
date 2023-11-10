@@ -9,237 +9,64 @@
     <title>Mason's Portfolio Site | Programming Projects</title>
 </head>
 <body>
-    <div id="header">
-        <nav>
-            <div id="nav-menu">
-                <ul>
-                    <li class="nav-link"><a href="../index.html">Home</a></li>
-                    <li class="nav-link"><a href="#">Programming Projects</a></li>
-                    <li class="nav-link"><a href="../nick/nick.html">Nick</a></li>
-                    <!-- <li class="nav"><a href=""></a></li> -->
-                </ul>
+    <div layout:fragment="content">
+        <script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+        <script type="text/javascript" src="./programming-projects.js"></script>
+
+        <div ng-app="portfolioSite" ng-controller="programmingProjectsCtrl">
+
+            <div id="header">
+                <nav>
+                    <div id="nav-menu">
+                        <ul>
+                            <li class="nav-link" ng-repeat="(title, href) in nav_menu_components track by $index"><a href="{{href}}">{{title}}</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <h1>{{title}}</h1>
             </div>
-        </nav>
-        <h1>Programming Projects</h1>
-    </div>
-    <div id="body">
-        <table id="projects-table">
-            <tr>
-                <th>Active</th>
-                <th>Complete</th>
-            </tr>
-        </table>
+
+            <div id="body">
+                <table>
+                    <tr><td>
+                        <table id="projects-table">
+                            <tr>
+                                <th>Active</th>
+                            </tr>
+                            <tr ng-repeat="branch in active_projects track by $index"><td>
+                                Project Title: {{branch.name}}<ul>
+                                    <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
+                                    <li ng-if="branch['languages']!=null">Languages:<ul>
+                                        <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
+                                    </ul></li>
+                                    <li ng-if="branch['website']!=null">Deployed Website: <a href="{{branch.website}}">{{branch.website}}</a></li>
+                                    <li ng-if="branch['pull_request']!=null">Latest Pull: {{branch.pull_request.name}}<br/>{{branch.pull_request.description}}</li>
+                                    <li ng-if="branch['github_website']!=null">GitHub Link: <a href="{{branch.github_website}}">{{branch.github_website}}</a></li>
+                                </ul>
+                            </td></tr>
+                        </table>
+                    </td><td>
+                        <table id="projects-table">
+                            <tr>
+                                <th>Completed</th>
+                            </tr>
+                            <tr ng-repeat="branch in inactive_projects track by $index"><td>
+                                Project Title: {{branch.name}}<ul>
+                                    <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
+                                    <li ng-if="branch['languages']!=null">Languages:<ul>
+                                        <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
+                                    </ul></li>
+                                    <li ng-if="branch['website']!=null">Deployed Website: <a href="{{branch.website}}">{{branch.website}}</a></li>
+                                    <li ng-if="branch['pull_request']!=null">Latest Pull: {{branch.pull_request.name}}<br/>{{branch.pull_request.description}}</li>
+                                    <li ng-if="branch['github_website']!=null">GitHub Link: <a href="{{branch.github_website}}">{{branch.github_website}}</a></li>
+                                </ul>
+                            </td></tr>
+                        </table>
+                    </tr></td>
+                </table>
+            </div>
+
+        </div>
     </div>
 </body>
-
-<script type="module" type="text/javascript">
-// init octokit
-import { Octokit, App } from "https://esm.sh/octokit";
-const octokit = new Octokit({
-    auth: generatePAT()
-});
-
-// variables
-const username = "mwhicks-dev";
-const active_flag = "[ACTV]";
-const complete_flag = "[COMP]";
-const flag_length = active_flag.length == complete_flag.length ? active_flag.length : -1;
-
-let activeRepositories = [];
-let completeRepositories = [];
-
-// functions
-function generatePAT() {
-    /**
-     * Absolutely ridiculous token generation thing I have to do in order to access public info through API without GitHub crying and sobbing and throwing up.
-     *
-     * @return string Weakest personal access token of all time
-     */
-    const pat = 'ghp_i2pfADH0PaddD1uFTF' + 'O6Xol2IyMdh34bGNr6';
-
-    return pat;
-}
-
-async function processRepositories() {
-    /**
-     * Obtains all of my public repositories and then calls different function to assign them to their appropriate place.
-     *
-     * Uses the GitHub API /user/repos path to get all public repositories (which is all the personal access token being used has accessed to), and then sends each individual repository to validateRepository to be processed.
-     *
-     * @yield Array Constructs the activeRepositories and completeRepositories global arrays which are used in later functions.
-     */
-    let repositories = await octokit.request("GET /user/repos");
-    repositories = repositories.data
-    for ( let i in repositories ) {
-        await validateRepository( repositories[ i ] );
-    }
-}
-
-async function validateRepository( repository ) {
-    /**
-     * If the repository parameter is to be used on my site, adds its data, merged pulls, and programming language information to the appropriate global array.
-     *
-     * Checks for pre-defined flags active_flag and complete_flag at the beginning of the repository description (if it has one). If the repository has one of the flags, then constructRepositoryObject is called to populate the repsective list with the aforementioned repository data.
-     *
-     * @param repository Broad-level repository information (/repos/{owner}/{repo}).
-     *
-     * @yield Array Adds an unnamed Object as an entry to activeRepositories or completeRepositories depending on the repository parameter's flag.
-     */
-    const desc = repository.description;
-    if ( desc != null ) {
-        const desc_len = desc.length;
-        if ( desc_len >= active_flag.length ) {
-            const name = repository.name;
-            const flag = desc.substring( 0, flag_length );
-            if ( flag == active_flag ) {
-                await constructRepositoryObject( repository, activeRepositories );
-            } else if ( flag == complete_flag ) {
-                await constructRepositoryObject( repository, completeRepositories );
-            }
-        }
-    }
-}
-
-async function constructRepositoryObject( repository, repositoryList ) {
-    /**
-     * Adds some repository information to an array.
-     *
-     * The passed repository has already been validated by validateRepository, so no checks are required. We may simply get the merged pulls and the languages data from GitHub and add all this information to the passed array.
-     *
-     * @param repository Broad-level repository information (/repos/{owner}/{repo}).
-     * @param repositoryList The array to which we will add the extended repository information.
-     *
-     * @yield Array Adds an unnamed Object as an entry to repositoryList.
-     */
-    const merged_pulls = await octokit.request("GET /repos/{owner}/{repo}/pulls?state=closed",{
-        owner: username,
-        repo: repository.name
-    });
-    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages",{
-        owner: username,
-        repo: repository.name
-    });
-    repositoryList.push( { repository, merged_pulls, languages } );
-}
-
-async function generateTableData() {
-    /**
-     * Creates and populates the projects table on this page.
-     *
-     * This creates a table that is as long as activeRepositories and completeRepositories are long, IDing table datums with the name of the repository whose information they will contain. Afterwards, addTableElemment is called on each repository to fill in the datums.
-     *
-     * @yield HTMLElement Creates the HTML table for this page.
-     */
-    const active_len = activeRepositories.length;
-    const complete_len = completeRepositories.length;
-
-    if ( Number.isNaN( active_len ) )  active_len = 0;
-    if ( Number.isNaN( complete_len ) )  complete_len = 0;
-
-    const table_height = active_len > complete_len ? active_len : complete_len;
-
-    const table = document.getElementById("projects-table")
-    for ( let i = 0; i < table_height; i++ ) {
-        let row = document.createElement("tr");
-        let activeColumn = document.createElement("td");
-        let completeColumn = document.createElement("td");
-
-        if ( i < active_len ) { activeColumn.id = activeRepositories[ i ].repository.name; }
-        if ( i < complete_len ) { completeColumn.id = completeRepositories[ i ].repository.name; }
-
-        row.appendChild( activeColumn );
-        row.appendChild( completeColumn );
-
-        table.appendChild( row );
-    }
-
-    for ( let i in activeRepositories ) {
-        await populateTableDatum( activeRepositories[ i ] );
-    }
-    for ( let i in completeRepositories ) {
-        await populateTableDatum( completeRepositories[ i ] );
-    }
-}
-
-async function populateTableDatum( data ) {
-    /**
-     * Creates an HTML string to be added to the table datum for the passed repository.
-     *
-     * Generate a series of HTML elements as strings and then passes them to the td created in the caller, generateTableData. This is done functionally so that I have a consistent, well-formatted page that looks nice and is readable.
-     *
-     * @param data Repository, language, and closed pull request information for a validated repository.
-     *
-     * @yield HTMLElement Populates an HTML element created by the caller, generateTableData.
-     */
-    // create HTML for repository name
-    const name = data.repository.name;
-    const name_string = "<p>Project Title: " + name + "</p>";
-
-    // create HTML for repository description if it exists
-    const desc = data.repository.description;
-    const desc_string = desc == null ? "" : "<li>Project Description: " + desc.substring( flag_length ) + "</li>";
-
-    // create HTML for repository langauges
-    let languages = data.languages.data
-    await interpretLanguageData( languages );
-    let languagesString = "<li>Languages:<ul>";
-
-    const languages_keys = Object.keys( languages );
-    for ( let i in languages_keys ) {
-        const key = languages_keys[ i ];
-        const val = languages[ key ];
-        languagesString += "<li>" + key + ": " + ( val == "0%" ? "<1%" : val ) + "</li>";
-    }
-    languagesString += "</ul></li>";
-
-    // create HTML for deployed homepage if it exists
-    const website = data.repository.homepage;
-    const website_string = website == "" || website == null ? "" : "<li>Deployed Website: <a href=\">" + website + "\">" + website + "</a></li>"
-
-    // create HTML for latest pull
-    const merged_pulls = data.merged_pulls.data;
-    let pull_string = "";
-    if ( merged_pulls.length > 0 ) {
-        const latest_pull = merged_pulls[ 0 ];
-        pull_string += "<li><p>Latest Pull: " + latest_pull.title + "</p><p>" + latest_pull.body + "</p></li>";
-    }
-
-    // create HTML for public githup repository if it exists
-    const html_url = data.repository.html_url;
-    const html_string = "<li>GitHub Link: <a href=\"" + html_url + "\">" + html_url + "</a></li>";
-
-    document.getElementById( name ).innerHTML = name_string
-        + "<ul>"
-        + desc_string
-        + languagesString
-        + website_string
-        + pull_string
-        + html_string
-        + "</ul>";
-}
-
-async function interpretLanguageData( data ) {
-    /**
-     * Rewrites each array index in data so that it may be more useful for the caller, populateTableDatum.
-     *
-     * @param data Map Maps language name string to lines of code
-     */
-    const keys = Object.keys( data );
-
-    let total = 0;
-    for ( let i in keys ) {
-        const key = keys[ i ];
-        total += parseInt( data[ key ] );
-    }
-    for ( let i in keys ) {
-        const key = keys[ i ];
-        data[ key ] = ( parseInt( 100 * parseInt( data[ key ] ) / total ) ) + "%";
-    }
-}
-
-// run functions
-await processRepositories()
-await generateTableData();
-</script>
-
 </html>
