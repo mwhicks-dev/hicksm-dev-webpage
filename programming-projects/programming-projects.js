@@ -3,7 +3,7 @@
 var app = angular.module( "portfolioSite", [] );
 app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
 
-    $scope.debug = 2;
+    $scope.debug = 0;
 
     /* Variables */
 
@@ -139,7 +139,7 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
                     // Continue if not merged into production
                     if ( !pull_request.hasOwnProperty( 'merged_at' )
                             || pull_request[ 'merged_at' ] == null
-                            || pull_request[ 'base' ][ 'ref' ] != 'production' ) { continue; }
+                            || pull_request[ 'base' ][ 'ref' ] != 'main' ) { continue; }
 
                     // Otherwise, actually mark pull request and break
                     data[ 'pull_request' ] = {
