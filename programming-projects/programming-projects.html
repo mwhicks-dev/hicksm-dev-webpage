@@ -35,7 +35,7 @@
                             </tr>
                             <tr ng-repeat="branch in active_projects track by $index"><td>
                                 Project Title: {{branch.name}}<ul>
-                                    <li ng-if="branch['description'!=null]">Project Description: {{branch.description}}</li>
+                                    <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
                                     <li ng-if="branch['languages']!=null">Languages:<ul>
                                         <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
                                     </ul></li>
@@ -52,7 +52,7 @@
                             </tr>
                             <tr ng-repeat="branch in inactive_projects track by $index"><td>
                                 Project Title: {{branch.name}}<ul>
-                                    <li ng-if="branch['description'!=null]">Project Description: {{branch.description}}</li>
+                                    <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
                                     <li ng-if="branch['languages']!=null">Languages:<ul>
                                         <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
                                     </ul></li>
