@@ -1,6 +1,5 @@
 /*<![CDATA[*/
 
-var app = angular.module( "portfolioSite", [] );
 app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
 
     $scope.debug = 0;
@@ -10,15 +9,9 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
     $scope.active_projects_flag = '[ACTV]';
     $scope.inactive_projects_flag = '[COMP]';
 
-    $scope.title = 'Programming Projects';
-    $scope.nav_menu_components = {
-        'Home' : '../index.html',
-        'Programming Projects' : '../programming-projects/programming-projects.html',
-        'Nick' : '../nick/nick.html'
-    };  // TODO: Rework with API when I make this a Spring application... eventually
     $scope.profiles = [
-        { 'root' : 'https://api.github.com', 'username' : 'mwhicks-dev', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
-        { 'root' : 'https://api.github.ncsu.edu', 'username' : 'mwhicks2', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
+        { 'root' : 'https://api.github.com', 'username' : 'mwhicks-dev', 'headers' : { 'Authorization' : 'token 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' } },
+        { 'root' : 'https://api.github.ncsu.edu', 'username' : 'mwhicks2', 'headers' : { 'Authorization' : 'token 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' } },
     ]; /* EXPIRES: MM/DD/YYYY */
     $scope.active_projects = [];
     $scope.inactive_projects = [];
@@ -223,10 +216,6 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
         }
 
     }
-
-    /* Logic */
-    // Make current page have no href
-    $scope.nav_menu_components[ $scope.title ] = '#'
 
     // Process profiles
     for ( let i in $scope.profiles ) {
