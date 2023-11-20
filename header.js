@@ -1,13 +1,13 @@
 /*<![CDATA[*/
 
 var app = angular.module( "portfolioSite", [] );
-app.controller( "headerCtrl", function( $scope, $http, $q ) {
+app.controller( "headerCtrl", function( $scope, $rootScope, $http, $q ) {
 
-    $scope.setup = function() {
+    $rootScope.setup = function( title ) {
 
-        if ( $scope.title == 'Home' ) {
+        if ( title == 'Home' ) {
 
-            $scope.nav_menu_components = {
+            $rootScope.nav_menu_components = {
                 'Home' : './index.html',
                 'Programming Projects' : './programming-projects/programming-projects.html',
                 'Nick' : './nick/nick.html'
@@ -15,7 +15,7 @@ app.controller( "headerCtrl", function( $scope, $http, $q ) {
 
         } else {
 
-            $scope.nav_menu_components = {
+            $rootScope.nav_menu_components = {
                 'Home' : '../index.html',
                 'Programming Projects' : '../programming-projects/programming-projects.html',
                 'Nick' : '../nick/nick.html'
@@ -23,13 +23,19 @@ app.controller( "headerCtrl", function( $scope, $http, $q ) {
 
         }
 
-        $scope.nav_menu_components[ $scope.title ] = '#';
+        $rootScope.nav_menu_components[ title ] = '#';
+
+        $rootScope.title = title;
 
     };
 
-    $scope.title = 'Programming Projects'
+    $rootScope.$on( 'setTitle', function( event, data ) {
 
-    $scope.setup();
+        console.log( 'Hit!' );
+
+        $rootScope.setup( data.title );
+
+    });
 
 });
 

@@ -10,8 +10,8 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
     $scope.inactive_projects_flag = '[COMP]';
 
     $scope.profiles = [
-        { 'root' : 'https://api.github.com', 'username' : 'mwhicks-dev', 'headers' : { 'Authorization' : 'token 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' } },
-        { 'root' : 'https://api.github.ncsu.edu', 'username' : 'mwhicks2', 'headers' : { 'Authorization' : 'token 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' } },
+        { 'root' : 'https://api.github.com', 'username' : 'mwhicks-dev', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
+        { 'root' : 'https://api.github.ncsu.edu', 'username' : 'mwhicks2', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
     ]; /* EXPIRES: MM/DD/YYYY */
     $scope.active_projects = [];
     $scope.inactive_projects = [];
@@ -217,12 +217,16 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
 
     }
 
+    /* Logic */
+
     // Process profiles
     for ( let i in $scope.profiles ) {
 
         $scope.processProfile( $scope.profiles[ i ] );
 
     }
+
+    $scope.$emit( 'setTitle', { 'title' : 'Programming Projects' } );
 
 });
 
