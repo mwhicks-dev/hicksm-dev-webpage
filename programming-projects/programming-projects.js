@@ -1,6 +1,5 @@
 /*<![CDATA[*/
 
-var app = angular.module( "portfolioSite", [] );
 app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
 
     $scope.debug = 0;
@@ -10,12 +9,6 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
     $scope.active_projects_flag = '[ACTV]';
     $scope.inactive_projects_flag = '[COMP]';
 
-    $scope.title = 'Programming Projects';
-    $scope.nav_menu_components = {
-        'Home' : '../index.html',
-        'Programming Projects' : '../programming-projects/programming-projects.html',
-        'Nick' : '../nick/nick.html'
-    };  // TODO: Rework with API when I make this a Spring application... eventually
     $scope.profiles = [
         { 'root' : 'https://api.github.com', 'username' : 'mwhicks-dev', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
         { 'root' : 'https://api.github.ncsu.edu', 'username' : 'mwhicks2', 'headers' : { 'Authorization' : 'token GITHUB_ACCESS_TOKEN' } },
@@ -225,8 +218,6 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
     }
 
     /* Logic */
-    // Make current page have no href
-    $scope.nav_menu_components[ $scope.title ] = '#'
 
     // Process profiles
     for ( let i in $scope.profiles ) {
@@ -234,6 +225,8 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
         $scope.processProfile( $scope.profiles[ i ] );
 
     }
+
+    $scope.$emit( 'setTitle', { 'title' : 'Programming Projects' } );
 
 });
 

@@ -1,31 +1,31 @@
-#body{
+.body{
     margin:0.75em;
 }
 
-#index-body-media img{
+.index-body-media img{
     width:10%;
 }
 
-#nick-body-media img{
+.nick-body-media img{
     display:block;
     width:25%;
     margin-left:auto;
     margin-right:auto;
 }
 
-#projects-table {
+.projects-table {
     table-layout:fixed;
     border:1px solid #343231;
     border-collapse: collapse;
     width:100%;
 }
 
-#projects-table th {
+.projects-table th {
     border:1px solid #343231;
     border-collapse:collapse;
 }
 
-#projects-table td {
+.projects-table td {
     width:50%;
     border-left:1px solid #343231;
     border-top:1px dashed #343231;
