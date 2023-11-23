@@ -10,14 +10,16 @@ app.controller( "headerCtrl", function( $scope, $rootScope, $http, $q ) {
             $rootScope.nav_menu_components = {
                 'Home' : './index.html',
                 'Programming Projects' : './programming-projects/programming-projects.html',
+                'Resume' : './resume/resume.html',
                 'Nick' : './nick/nick.html'
             }
 
-        } else {
+        } else {  // TODO: Set . -> .. if NOT home
 
             $rootScope.nav_menu_components = {
                 'Home' : '../index.html',
                 'Programming Projects' : '../programming-projects/programming-projects.html',
+                'Resume' : '../resume/resume.html',
                 'Nick' : '../nick/nick.html'
             }
 

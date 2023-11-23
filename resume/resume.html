@@ -14,11 +14,15 @@
         <!-- Scripts -->
         <script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
         <script type="text/javascript" src="../header.js"></script>
-        <script type="text/javascript" src="./nick.js"></script>
+        <script type="text/javascript" src="./resume.js"></script>
 
         <div class="header" ng-controller="headerCtrl">
 
             <!-- Header -->
+            <ul class="nav-menu">
+                <li class="nav-link" ng-repeat="(title, href) in nav_menu_components track by $index"><a href="{{href}}">{{title}}</a></li>
+            </ul>
+            <h1>{{title}}</h1>
 
         </div>
 
