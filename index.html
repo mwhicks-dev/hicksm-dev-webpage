@@ -8,31 +8,31 @@
     <link rel="stylesheet" href="css/body.css">
     <title>Mason's Portfolio Site | Home</title>
 </head>
-<body>
-    <div class="header">
-        <nav>
-            <div class="nav-menu">
-                <ul>
-                    <li class="nav-active"><a href="#">Home</a></li>
-                    <li class="nav-link"><a href="programming-projects/programming-projects.html">Programming Projects</a></li>
-                    <li class="nav-link"><a href="nick/nick.html">Nick</a></li>
-                    <!-- <li class="nav"><a href=""></a></li> -->
-                </ul>
-            </div>
-        </nav>
-        <h1>aauuuugugghh</h1>
-    </div>
-    <div class="body">
-        <div class="index-body-media">
-            <img src="cats.jpg" alt="A picture of the author's cats" align="right"/>
-            <img src="profile.jpg" alt="A picture of the author" align="right"/>
+<body ng-app="portfolioSite">
+    <div layout:fragment="content">
+
+        <script	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+        <script type="text/javascript" src="./header.js"></script>
+        <script type="text/javascript" src="./index.js"></script>
+
+        <div class="header" ng-controller="headerCtrl">
+            <ul class="nav-menu">
+                <li class="nav-link" ng-repeat="(title, href) in nav_menu_components track by $index"><a href="{{href}}">{{title}}</a></li>
+            </ul>
+            <h1>{{title}}</h1>
         </div>
-        <div class="index-body-paragraphs">
-            <p>I'm Mason, a rising senior at N.C. State University in Raleigh, NC (class of 2024).</p>
-            <p>My major is a Bachelor of Science in Computer Science with a minor in Mathematics. The main thing I'm seeking to get out of my undergraduate education is competence to develop full-stack software well enough to work on a development team after graduating, as well as learn how to use some specific technologies.</p>
-            <p>The languages I have the most EXP in are Java and Python, but I'm looking to get a lot of groundwork in C++ this coming Fall. Since I already know how to program, I am also beginning to practice putting together my own full-stack applications and large data systems. Check out my projects page for more information on that.</p>
-            <p>When I'm not learning or working, I like to spend time rock climbing at Triangle Rock Club here in NC. I'm working on V5 proficiency for bouldering as well as, generally speaking, getting stamina back for lead after having to take a break from it last Spring. I also play chess very casually and am about 700 elo in both rapid and blitz, steadily climbing towards 1000.</p>
-            <p>I also have two cats, Basil (on the higher shelf) and Pico (on the lower shelf) who are my best buddies and like to keep me company when I work from home... in particular, if I work too long without paying attention to them, Basil will come sit on hands and Pico on my feet so I am effectively trapped. They're great at keeping me from getting too wired while I work on a problem or a project.</p>
+        <div class="body" ng-controller="indexCtrl">
+            <div class="index-body-media">
+                <img src="cats.jpg" alt="A picture of the author's cats" align="right"/>
+                <img src="profile.jpg" alt="A picture of the author" align="right"/>
+            </div>
+            <div class="index-body-paragraphs">
+                <p>I'm Mason, a rising senior at N.C. State University in Raleigh, NC (class of 2024).</p>
+                <p>My major is a Bachelor of Science in Computer Science with a minor in Mathematics. The main thing I'm seeking to get out of my undergraduate education is competence to develop full-stack software well enough to work on a development team after graduating, as well as learn how to use some specific technologies.</p>
+                <p>The languages I have the most EXP in are Java and Python, but I'm looking to get a lot of groundwork in C++ this coming Fall. Since I already know how to program, I am also beginning to practice putting together my own full-stack applications and large data systems. Check out my projects page for more information on that.</p>
+                <p>When I'm not learning or working, I like to spend time rock climbing at Triangle Rock Club here in NC. I'm working on V5 proficiency for bouldering as well as, generally speaking, getting stamina back for lead after having to take a break from it last Spring. I also play chess very casually and am about 700 elo in both rapid and blitz, steadily climbing towards 1000.</p>
+                <p>I also have two cats, Basil (on the higher shelf) and Pico (on the lower shelf) who are my best buddies and like to keep me company when I work from home... in particular, if I work too long without paying attention to them, Basil will come sit on hands and Pico on my feet so I am effectively trapped. They're great at keeping me from getting too wired while I work on a problem or a project.</p>
+            </div>
         </div>
     </div>
 </body>
