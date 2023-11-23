@@ -1,0 +1,15 @@
+I'm Mason, a rising senior at N.C. State University in Raleigh, NC (class of 2024). This website contains the following:
+- HOME:                     a little about me.
+- PROGRAMMING PROJECTS:     lists of all of my bigger programming projects, with info about the latest releases.
+- RESUME:                   the latest version of my resume.
+- NICK:                     a picture of one of my friends.
+
+I'm currently studying for a double major in Computer Science and Mathematics with a plan to return to graduate school and get a Masters in Computer Science and Masters of Business Administration later. For now, I am seeking to learn how to use many different technologies so that I am able to work with whatever stack a project calls for; my focus in pure math supplements this so that I can look deeper beneath the knife at all of the things I study. My career goal is to find myself in a team lead position at a workplace whose values I align with and company I enjoy.
+
+The programming languages that I have the most experience with are Java, Python, and C/C++ for back-end systems, but have been learning new front-end pieces as well (through projects like my website). In my free time, I have several full-stack applications that I am working on for some extra resume experience. You can see more about that in my Programming Projects page.
+
+When I'm not learning or working, I like to spend time rock climbing at Triangle Rock Club here in NC. I'm working on V5 and V6 proficiency for bouldering as well as my first 5.11 onsight on toprope, 5.10 onsight on lead. This is the main passion I am excited to spend more time on once I graduate! Climbing page coming soon.
+
+I have two cats depicted on the right, Basil (on the higher shelf) and Pico de Gato (on the lower shelf) who are my best buddies and like to keep me company when I work from home... in particular, if I work too long without a break, one of them will hop onto my desk and demand ten or more minutes of undivided attention. They're great at keeping me from getting too wired while I work on a problem or a project.
+
+Feel free to contact me via any of the means provided on my resume. If you call, I may not pick up - leave a message and I will get back to you as soon as I can. Thank you!
