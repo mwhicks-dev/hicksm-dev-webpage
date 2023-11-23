@@ -5,24 +5,15 @@ app.controller( "headerCtrl", function( $scope, $rootScope, $http, $q ) {
 
     $rootScope.setup = function( title ) {
 
-        if ( title == 'Home' ) {
+        var root_dir = ( title == 'Home' )
+            ? '.'
+            : '..';
 
-            $rootScope.nav_menu_components = {
-                'Home' : './index.html',
-                'Programming Projects' : './programming-projects/programming-projects.html',
-                'Resume' : './resume/resume.html',
-                'Nick' : './nick/nick.html'
-            }
-
-        } else {  // TODO: Set . -> .. if NOT home
-
-            $rootScope.nav_menu_components = {
-                'Home' : '../index.html',
-                'Programming Projects' : '../programming-projects/programming-projects.html',
-                'Resume' : '../resume/resume.html',
-                'Nick' : '../nick/nick.html'
-            }
-
+        $rootScope.nav_menu_components = {
+            'Home' : root_dir + '/index.html',
+            'Programming Projects' : root_dir + '/programming-projects/programming-projects.html',
+            'Resume' : root_dir + '/resume/resume.html',
+            'Nick' : root_dir + '/nick/nick.html'
         }
 
         $rootScope.nav_menu_components[ title ] = '#';
