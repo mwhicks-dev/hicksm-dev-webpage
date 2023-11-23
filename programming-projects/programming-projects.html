@@ -21,46 +21,44 @@
             <h1>{{title}}</h1>
         </div>
 
-        <div ng-controller="programmingProjectsCtrl">
-            <div class="body">
-                <table>
-                    <tr><td>
-                        <table class="projects-table">
-                            <tr>
-                                <th>Active</th>
-                            </tr>
-                            <tr ng-repeat="branch in active_projects track by $index"><td>
-                                Project Title: {{branch.name}}<ul>
-                                    <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
-                                    <li ng-if="branch['languages']!=null">Languages:<ul>
-                                        <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
-                                    </ul></li>
-                                    <li ng-if="branch['website']!=null">Deployed Website: <a href="{{branch.website}}">{{branch.website}}</a></li>
-                                    <li ng-if="branch['pull_request']!=null">Latest Pull: {{branch.pull_request.name}}<br/>{{branch.pull_request.description}}</li>
-                                    <li ng-if="branch['github_website']!=null">GitHub Link: <a href="{{branch.github_website}}">{{branch.github_website}}</a></li>
-                                </ul>
-                            </td></tr>
-                        </table>
-                    </td><td>
-                        <table class="projects-table">
-                            <tr>
-                                <th>Completed</th>
-                            </tr>
-                            <tr ng-repeat="branch in inactive_projects track by $index"><td>
-                                Project Title: {{branch.name}}<ul>
-                                    <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
-                                    <li ng-if="branch['languages']!=null">Languages:<ul>
-                                        <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
-                                    </ul></li>
-                                    <li ng-if="branch['website']!=null">Deployed Website: <a href="{{branch.website}}">{{branch.website}}</a></li>
-                                    <li ng-if="branch['pull_request']!=null">Latest Pull: {{branch.pull_request.name}}<br/>{{branch.pull_request.description}}</li>
-                                    <li ng-if="branch['github_website']!=null">GitHub Link: <a href="{{branch.github_website}}">{{branch.github_website}}</a></li>
-                                </ul>
-                            </td></tr>
-                        </table>
-                    </tr></td>
-                </table>
-            </div>
+        <div class="body" ng-controller="programmingProjectsCtrl">
+            <table>
+                <tr><td>
+                    <table class="projects-table">
+                        <tr>
+                            <th>Active</th>
+                        </tr>
+                        <tr ng-repeat="branch in active_projects track by $index"><td>
+                            Project Title: {{branch.name}}<ul>
+                                <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
+                                <li ng-if="branch['languages']!=null">Languages:<ul>
+                                    <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
+                                </ul></li>
+                                <li ng-if="branch['website']!=null">Deployed Website: <a href="{{branch.website}}">{{branch.website}}</a></li>
+                                <li ng-if="branch['pull_request']!=null">Latest Pull: {{branch.pull_request.name}}<br/>{{branch.pull_request.description}}</li>
+                                <li ng-if="branch['github_website']!=null">GitHub Link: <a href="{{branch.github_website}}">{{branch.github_website}}</a></li>
+                            </ul>
+                        </td></tr>
+                    </table>
+                </td><td>
+                    <table class="projects-table">
+                        <tr>
+                            <th>Completed</th>
+                        </tr>
+                        <tr ng-repeat="branch in inactive_projects track by $index"><td>
+                            Project Title: {{branch.name}}<ul>
+                                <li ng-if="branch['description']!=null">Project Description: {{branch.description}}</li>
+                                <li ng-if="branch['languages']!=null">Languages:<ul>
+                                    <li ng-repeat="(language, lines) in branch.languages">{{language}}: {{lines}}%</li>
+                                </ul></li>
+                                <li ng-if="branch['website']!=null">Deployed Website: <a href="{{branch.website}}">{{branch.website}}</a></li>
+                                <li ng-if="branch['pull_request']!=null">Latest Pull: {{branch.pull_request.name}}<br/>{{branch.pull_request.description}}</li>
+                                <li ng-if="branch['github_website']!=null">GitHub Link: <a href="{{branch.github_website}}">{{branch.github_website}}</a></li>
+                            </ul>
+                        </td></tr>
+                    </table>
+                </tr></td>
+            </table>
         </div>
     </div>
 </body>
