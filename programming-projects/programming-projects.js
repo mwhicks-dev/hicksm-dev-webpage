@@ -27,10 +27,9 @@ app.controller( "programmingProjectsCtrl", function( $scope, $http, $q ) {
         }
 
         $http({
-            method : 'GET',
-            url : profile[ 'root' ] + '/users/' + profile[ 'username' ] + '/repos',
+            url : profile[ 'root' ] + '/search/repositories?q=user:' + profile[ 'username' ],
             headers : profile[ 'headers' ]
-        }).then( function( response ) { $scope.processRepositories( response.data, profile ); } );
+        }).then( function( response ) { $scope.processRepositories( response.data.items, profile ); } );
 
         if ( $scope.debug > 0 ) {
             console.log( "<- processProfile" );
