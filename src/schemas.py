@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4, UUID
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -53,11 +54,15 @@ class Markdown(MarkdownBase):
 class FileBase(BaseModel):
     desc: str
     location: str
+    data_type: str
 
 class FileCreate(FileBase):
     pass
 
-class File(FileBase):
+class FileUpdate(FileBase):
+    page: Optional[str] 
+
+class File(FileUpdate):
     id: UUID
 
     model_config = {

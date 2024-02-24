@@ -37,3 +37,4 @@ class File(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True)
     desc: Mapped[str]
     location: Mapped[str]
+    data_type: Mapped[Optional[str]]
