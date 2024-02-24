@@ -5,15 +5,11 @@ app.controller( "headerCtrl", function( $scope, $rootScope, $http, $q ) {
 
     $rootScope.setup = function( title ) {
 
-        var root_dir = ( title == 'Home' )
-            ? '.'
-            : '..';
-
         $rootScope.nav_menu_components = {
-            'Home' : root_dir + '/index.html',
-            'Programming Projects' : root_dir + '/programming-projects/programming-projects.html',
-            'Resume' : root_dir + '/resume/resume.html',
-            'Nick' : root_dir + '/nick/nick.html'
+            'Home' : 'index.html',
+            'Programming Projects' : 'programming-projects.html',
+            'Resume' : 'resume.html',
+            'Nick' : 'nick.html'
         }
 
         $rootScope.nav_menu_components[ title ] = '#';
