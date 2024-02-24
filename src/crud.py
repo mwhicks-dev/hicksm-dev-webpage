@@ -152,7 +152,8 @@ class FileService:
     def create(db: Session, file: schemas.FileCreate):
         item = models.File(
             id=get_uuid(tbl=models.File, db=db),
-            **file.dict()
+            **file.dict(),
+            page=None
         )
 
         db.add(item)
@@ -170,7 +171,7 @@ class FileService:
         return items
     
     @staticmethod
-    def update(db: Session, uid: UUID, file: schemas.FileBase):
+    def update(db: Session, uid: UUID, file: schemas.FileUpdate):
         item = FileService.read(db=db, filters={'id' : uid}).first()
 
         for key, value in user.dict():
