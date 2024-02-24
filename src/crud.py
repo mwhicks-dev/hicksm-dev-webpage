@@ -174,7 +174,7 @@ class FileService:
     def update(db: Session, uid: UUID, file: schemas.FileUpdate):
         item = FileService.read(db=db, filters={'id' : uid}).first()
 
-        for key, value in user.dict():
+        for key, value in file.dict():
             setattr(item, key, value)
         
         db.commit()
@@ -184,7 +184,7 @@ class FileService:
     
     @staticmethod
     def delete(db: Session, uid: UUID):
-        item = UserService.read(db=db, filters={'id' : uid})
+        item = FileService.read(db=db, filters={'id' : uid})
 
         item_copy = deepcopy(item.first())
 
