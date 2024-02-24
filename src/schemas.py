@@ -8,7 +8,7 @@ class UserBase(BaseModel):
     name: str
     email: str
 
-class UserDto(UserBase):
+class UserCreate(UserBase):
     pass
 
 class User(UserBase):
@@ -23,7 +23,7 @@ class TokenBase(BaseModel):
     username: str
     token: str
 
-class TokenDto(TokenBase):
+class TokenCreate(TokenBase):
     pass
 
 class Token(TokenBase):
@@ -37,7 +37,7 @@ class MarkdownBase(BaseModel):
     desc: str
     markdown: str
 
-class MarkdownDto(MarkdownBase):
+class MarkdownCreate(MarkdownBase):
     pass
 
 class Markdown(MarkdownBase):
@@ -51,7 +51,7 @@ class FileBase(BaseModel):
     desc: str
     location: str
 
-class FileDto(FileBase):
+class FileCreate(FileBase):
     pass
 
 class File(FileBase):

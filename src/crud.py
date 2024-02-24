@@ -9,7 +9,7 @@ from . import models, schemas
 class UserService:
 
     @staticmethod
-    def create(db: Session, user: schemas.UserDto):
+    def create(db: Session, user: schemas.UserCreate):
         item = models.User(
             id=get_uuid(tbl=models.User, db=db),
             **user.dict(),
@@ -56,7 +56,7 @@ class UserService:
 class TokenService:
 
     @staticmethod
-    def create(db: Session, token: schemas.TokenDto):
+    def create(db: Session, token: schemas.TokenCreate):
         item = models.Token(
             id=get_uuid(tbl=models.Token, db=db),
             **token.dict()
@@ -102,7 +102,7 @@ class TokenService:
 class MarkdownService:
 
     @staticmethod
-    def create(db: Session, markdown: schemas.MarkdownDto):
+    def create(db: Session, markdown: schemas.MarkdownCreate):
         item = models.Markdown(
             id=get_uuid(tbl=models.Markdown, db=db),
             **markdown.dict()
@@ -148,7 +148,7 @@ class MarkdownService:
 class FileService:
 
     @staticmethod
-    def create(db: Session, file: schemas.FileDto):
+    def create(db: Session, file: schemas.FileCreate):
         item = models.File(
             id=get_uuid(tbl=models.File, db=db),
             **file.dict()
