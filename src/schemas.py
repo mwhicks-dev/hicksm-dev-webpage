@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from uuid import UUID
+from uuid import uuid4, UUID
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     email: str
 
 class UserDto(UserBase):
-    authentication_code: str
+    pass
 
 class User(UserBase):
     id: UUID
