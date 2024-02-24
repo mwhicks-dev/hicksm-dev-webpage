@@ -13,8 +13,6 @@ class User(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True)
     name: Mapped[str]
     email: Mapped[str]
-    creation_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
-    updated_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     administrator: Mapped[bool]
 
 class Token(Base):
