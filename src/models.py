@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import DateTime
