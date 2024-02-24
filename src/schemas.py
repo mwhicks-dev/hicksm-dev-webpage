@@ -26,7 +26,10 @@ class TokenBase(BaseModel):
 class TokenCreate(TokenBase):
     pass
 
-class Token(TokenBase):
+class TokenUpdate(TokenBase):
+    active: bool
+
+class Token(TokenUpdate):
     id: UUID
 
     model_config = {

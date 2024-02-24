@@ -22,6 +22,7 @@ class Token(Base):
     url: Mapped[str]
     username: Mapped[str]
     token: Mapped[str]
+    active: Mapped[bool]
 
 class Markdown(Base):
     __tablename__ = "markdowns"
