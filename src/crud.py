@@ -59,7 +59,8 @@ class TokenService:
     def create(db: Session, token: schemas.TokenCreate):
         item = models.Token(
             id=get_uuid(tbl=models.Token, db=db),
-            **token.dict()
+            **token.dict(),
+            active=True
         )
 
         db.add(item)
@@ -77,7 +78,7 @@ class TokenService:
         return items
     
     @staticmethod
-    def update(db: Session, uid: UUID, token: schemas.TokenBase):
+    def update(db: Session, uid: UUID, token: schemas.TokenUpdate):
         item = TokenService.read(db=db, filters={'id' : uid}).first()
 
         for key, value in token.dict():
