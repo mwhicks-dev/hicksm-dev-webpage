@@ -1,6 +1,10 @@
 import os
 from uuid import UUID
 
+from smtplib import SMTP_SSL, SMTP_SSL_PORT
+
+import uvicorn
+
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
@@ -254,3 +258,12 @@ def send_challenge_email(challenge: models.Challenge, email: str):
     smtp_server = SMTP_SSL(os.environ['SMTP_HOST'], port=SMTP_SSL_PORT)
     smtp_server.login(os.environ['SMTP_USER'], os.environ['SMTP_PASS'])
     smtp_server.sendmail(from_email, email, email_message)
+
+    smtp_server.quit()
+
+if __name__ == '__main__':
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        reload=False
+    )
