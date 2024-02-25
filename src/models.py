@@ -9,6 +9,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from database import Base
 
 _TARGET_LENGTH = 6
+_MAX_CHALLENGES = 25
+_MAX_SESSIONS = 50
 
 class User(Base):
     __tablename__ = "users"
