@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
+
+_TARGET_LENGTH = 6
 
 class User(Base):
     __tablename__ = "users"
@@ -38,3 +41,19 @@ class File(Base):
     desc: Mapped[str]
     location: Mapped[str]
     data_type: Mapped[Optional[str]]
+
+class Session(Base):
+    __tablename__ = "session"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+    email: Mapped[str]
+    creation_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+    accessed_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+
+class Challenge(Base):
+    __tablename__ = "challenge"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+    creation_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
+    target: Mapped[str] = mapped_column(String(_TARGET_LENGTH))
+    code_to_eval: Mapped[Optional[str]]
