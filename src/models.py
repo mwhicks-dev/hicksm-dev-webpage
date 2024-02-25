@@ -45,7 +45,7 @@ class File(Base):
 class Session(Base):
     __tablename__ = "session"
 
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[UUID] = mapped_column(primary_key=True)
     email: Mapped[str]
     creation_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     accessed_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
@@ -53,7 +53,7 @@ class Session(Base):
 class Challenge(Base):
     __tablename__ = "challenge"
 
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[UUID] = mapped_column(primary_key=True)
     creation_time: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True))
     target: Mapped[str] = mapped_column(String(_TARGET_LENGTH))
     code_to_eval: Mapped[Optional[str]]

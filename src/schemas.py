@@ -73,10 +73,10 @@ class SessionCreate(BaseModel):
     email: str
 
 class Session(BaseModel):
-    id: str
+    id: UUID
 
 class Challenge(BaseModel):
-    id: str
+    id: UUID
 
 class Response(Challenge):
     response: str
