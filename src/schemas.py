@@ -75,8 +75,16 @@ class SessionCreate(BaseModel):
 class Session(BaseModel):
     id: UUID
 
+    model_config = {
+        'from_attributes' : True
+    }
+
 class Challenge(BaseModel):
     id: UUID
+
+    model_config = {
+        'from_attributes' : True
+    }
 
 class Response(Challenge):
     response: str
