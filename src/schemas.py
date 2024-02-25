@@ -68,3 +68,15 @@ class File(FileUpdate):
     model_config = {
         'from_attributes' : True
     }
+
+class SessionCreate(BaseModel):
+    email: str
+
+class Session(BaseModel):
+    id: str
+
+class Challenge(BaseModel):
+    id: str
+
+class Response(Challenge):
+    response: str
