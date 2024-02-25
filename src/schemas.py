@@ -72,6 +72,9 @@ class File(FileUpdate):
 class SessionCreate(BaseModel):
     email: str
 
+class SessionUpdate(BaseModel):
+    accessed_time: datetime
+
 class Session(BaseModel):
     id: UUID
 
