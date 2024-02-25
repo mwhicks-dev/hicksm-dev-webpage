@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from uuid import UUID
 from copy import deepcopy
+from datetime import datetime
 
+from sqlalchemy import asc
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -185,6 +187,98 @@ class FileService:
     @staticmethod
     def delete(db: Session, uid: UUID):
         item = FileService.read(db=db, filters={'id' : uid})
+
+        item_copy = deepcopy(item.first())
+
+        item.delete()
+        db.commit()
+
+        return item_copy
+
+class ChallengeService:
+
+    @staticmethod
+    def create(db: Session, code_to_eval: str):
+        challenges = list(ChallengeService.read(db=db).all())
+        if len(challenges) == models._MAX_CHALLENGES:
+            oldest = ChallengeService.read(db=db).order_by(asc('creation_time')).limit(1)
+            ChallengeService.delete(db=db, uid=oldest.id)
+
+        challenge = models.Challenge(
+            id=get_uuid(tbl=models.Challenge, db=db),
+            creation_time=datetime.now(),
+            target=''.join(random.choices(string.ascii_letters + string.digits, k=models._TARGET_LENGTH)),
+            code_to_eval=code_to_eval
+        )
+
+        db.add(challenge)
+        db.commit()
+
+        return challenge
+
+    @staticmethod
+    def read(db: Session, filters: dict[str, Any] = None):
+        items = db.query(models.Challenge)
+        if filters:
+            items.filter_by(**filters)
+        
+        return items
+    
+    @staticmethod
+    def delete(db: Session, uid: UUID):
+        item = ChallengeService.read(db=db, filters={'id' : uid})
+
+        item_copy = deepcopy(item.first())
+
+        item.delete()
+        db.commit()
+
+        return item_copy
+
+class SessionService:
+
+    @staticmethod
+    def create(db: Session, request: schemas.SessionCreate):
+        sessions = list(SessionService.read(db=db).all())
+        if len(sessions) == models._MAX_SESSIONS:
+            oldest = SessionService.read(db=db).order_by(asc('creation_time')).limit(1)
+            SessionService.delete(db=db, uid=oldest.id)
+        
+        session = models.Session(
+            id=get_uuid(tbl=models.Session, db=db),
+            email=request.email,
+            creation_time=datetime.now(),
+            accessed_time=datetime.now()
+        )
+
+        db.add(session)
+        db.commit()
+
+        return session
+    
+    @staticmethod
+    def read(db: Session, filters: dict[str, Any] = None):
+        items = db.query(models.Session)
+        if filters:
+            items.filter_by(**filters)
+        
+        return items
+    
+    @staticmethod
+    def update(db: Session, uid: UUID, session: schemas.SessionUpdate):
+        item = SessionService.read(db=db, filters={'id' : uid}).first()
+
+        for key, value in session.dict():
+            setattr(item, key, value)
+        
+        db.commit()
+        db.refresh(item)
+
+        return item
+    
+    @staticmethod
+    def delete(db: Session, uid: UUID):
+        item = SessionService.read(db=db, filters={'id' : uid})
 
         item_copy = deepcopy(item.first())
 
