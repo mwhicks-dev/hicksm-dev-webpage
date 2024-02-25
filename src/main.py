@@ -21,7 +21,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post(BASE_PATH + "/user", response_model=schemas.User)
+@app.post(BASE_PATH + "/user", response_model=schemas.Challenge)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     item = UserService.read(db=db, filters={'email' : user.email}).first()
     if item:
@@ -30,7 +30,16 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
             detail="Email already registered"
         )
     
-    return UserService.create(db=db, user=user)
+    challenge = ChallengeService.create(
+        code_to_eval=(
+            f"user = UserService.create(db=db, user=schemas.UserCreate(name={user.name}, email={user.email}));" + 
+            f"session = Session.create(db=db, request=schemas.SessionCreate(email=user.email))"
+        ),
+        db=db
+    )
+    send_challenge_email(challenge=challenge, email=user.email)
+    
+    return challenge
 
 @app.get(BASE_PATH + "/user/{uid}", response_model=schemas.User)
 def get_user(uid: UUID, db: Session = Depends(get_db)):
@@ -55,7 +64,7 @@ def update_user(uid: UUID, update: user_schema.UserBase, db: Session = Depends(g
     return UserService.update(uid=uid, user=update, db=db)
 
 @app.delete(BASE_PATH + "/user/{uid}", response_model=schemas.User)
-def post_user(uid: UUID, update: user_schema.UserBase, db: Session = Depends(get_db)):
+def delete_user(uid: UUID, update: user_schema.UserBase, db: Session = Depends(get_db)):
     item = get_user(uid=uid, db=db)
 
     return UserService.delete(db=db, uid=uid)
@@ -190,3 +199,58 @@ def update_file(uid: UUID, contents: str, update: schemas.FileUpdate, db: Sessio
     os.system(f"echo \"{contents}\" > {update.location}")
 
     return FileService.update(db=db, uid=uid, file=update)
+
+@app.post(BASE_PATH + "/session", response_model=schemas.Challenge)
+def login_user(credentials: schema.SessionCreate, db: Session = Depends(get_db)):
+    user = UserService.read(db=db, filters={'email' : user.email}).first()
+    if not user:
+        raise HTTPException(
+            status=404,
+            detail="No user matching email"
+        )
+    
+    challenge = ChallengeService.create(
+        code_to_eval=f"session = Session.create(db=db, request=schemas.SessionCreate(email={credentials.email}))",
+        db=db
+    )
+    send_challenge_email(challenge=challenge, email=credentials.email)
+
+    return challenge
+
+@app.post(BASE_PATH + "/response", response_model=schemas.Session)
+def login_challenge_response(response: schemas.Response, db: Session = Depends(get_db)):
+    challenge = ChallengeService.read(db=db, filters={'id' : response.id})
+    if not challenge:
+        raise HTTPException(
+            status=404,
+            detail="Could not identify challenge"
+        )
+
+    challenge = ChallengeService.delete(uid=challenge.id)
+    if response.response != challenge.target:
+        raise HTTPException(
+            status=401,
+            detail="Invalid credentials."
+        )
+    
+    code_to_exec = code_to_eval.split(';')
+    for code in code_to_exec:
+        exec(code)
+
+    return exec(challenge.code_to_eval)
+
+def send_challenge_email(challenge: models.Challenge, email: str):
+    # create OTP message
+    from_email = f"hicksm.dev <{os.environ['SMTP_USER']}>"
+    body = f"Your one-time password is: {challenge.target}\nThis password will expire in 24 hours."
+    headers = (
+        f"From: {from_email}\r\n"
+        + f"To: {email}\r\n"
+        + f"Subject: Your hicksm.dev Verification Code\r\n"
+    )
+    email_message = f"{headers}\r\n{body}"
+
+    # send through SMTP
+    smtp_server = SMTP_SSL(os.environ['SMTP_HOST'], port=SMTP_SSL_PORT)
+    smtp_server.login(os.environ['SMTP_USER'], os.environ['SMTP_PASS'])
+    smtp_server.sendmail(from_email, email, email_message)
